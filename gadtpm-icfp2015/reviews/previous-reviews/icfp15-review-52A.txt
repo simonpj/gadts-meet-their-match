@@ -1,0 +1,42 @@
+===========================================================================
+                           ICFP '15 Review #52A
+---------------------------------------------------------------------------
+                     Paper #52: GADTs meet their match
+---------------------------------------------------------------------------
+
+
+                      Overall merit: 4. Accept
+                 Reviewer expertise: 3. Knowledgeable
+
+                         ===== Paper summary =====
+
+This paper gives an algorithm (rather, an algorithm template) for checking exhaustiveness and irredundancy of pattern matching in a rich language with GADTs, guards, and laziness (the latter is relevant because seemingly redundant patterns can affect strictness). The algorithm performs an abstract interpretation of the match, gathering positive and negative information that have already been matched at each point. For type equations and term-level guards, it collects constraints and relies on an external oracle for finding unsatisfiable constraints that correspond to unreachable patterns. The algorithm is conservative, and the oracle only improves precision.
+
+                          ===== Evaluation =====
+
+PRO
+
+- The paper provides an interesting discussion of the problem.
+- The algorithm is factored quite nicely.
+- Clearly, the topic is relevant.
+
+CONS
+
+- The idea that patterns can be checked via a form of abstract interpretation is folklore, as far as I’m aware. The main novelty here is to incorporate constraints not captured by value syntax in a generic manner.
+
+Although much of the technique doesn’t seem to be a new innovation, it is still valuable to have it developed and written down properly. For some reason, the topic hasn’t seen as much coverage in literature as it deserves. This paper could be a useful, up-to-date reference.
+
+                    ===== Comments for author(s) =====
+
+In Figure 4, Denotation of patterns: in the rule for pattern guards, what is E[.]?
+
+In Section 8.1, you say “none of these complications arise in Haskell”. I would say that’s a fairly twisted description. These are not complications by themselves (since they can simply be ignored), but rather additional optimization _opportunities_ that Haskell does not offer.
+
+You should also cite Sestoft’s “ML pattern match compilation and partial evaluation”. In particular, the algorithm he arrives at in Sec. 7 of the paper essentially is an abstract interpretation computing positive and negative information as well, and can trivially report exhaustiveness and irredundancy errors (as pointed out in 7.4).
+
+Typos:
+
+Fig.2, grammar of types: “tau tau” should be “tau -> tau”
+Fig.3, rule CConCon: 2nd K_i should be K_j
+Fig.4, rule Con: t_i should be V_i
+

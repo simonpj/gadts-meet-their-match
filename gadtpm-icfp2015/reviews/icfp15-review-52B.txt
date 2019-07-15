@@ -1,0 +1,94 @@
+===========================================================================
+                           ICFP '15 Review #52B
+---------------------------------------------------------------------------
+                     Paper #52: GADTs meet their match
+---------------------------------------------------------------------------
+
+
+                      Overall merit: 5. Strong accept
+
+                         ===== Paper summary =====
+
+This paper discusses the problem of exhaustiveness- and redundancy
+checking of Haskell patterns in the presence of GADTs and guards.
+Without these features, pattern compilation (including exhaustiveness
+and redundancy checking) has been a widely studied problem and can be
+considered "solved".
+
+The problem becomes interesting again when additional constraints -
+both on the type and on the value side - come into play.  Patterns
+involving GADTs may be exhaustive even though they "look" redundant at
+first glance - typing guarantees that seemingly uncovered cases can
+not arise.  Similar issues arise from the use of pattern guards.
+
+In the setting of a lazy language the problem is made slightly more
+complicated since pattern compilation must take laziness into account:
+A seemingly redundant pattern can cause an argument position to become
+strict.
+
+The approach taken here is to consider clauses in turn.  Starting from
+an initial set of uncovered-so-far values, partition this set into
+three parts: a set of now-covered values, a set of values that cause
+divergence, and a set of values that is still uncovered.  The
+still-uncovered set is then carried through to the next clause.
+
+The main contribution of the work is the representation of these sets
+as value set abstractions \Gamma |- v |> \Delta which cleanly separate
+the constraints (\Delta) from the shape information on values.
+Constraint solving, especially for constraints generated from pattern
+guards, is treated as a black box.
+
+                          ===== Evaluation =====
+
+I enjoyed reading this paper:
+
+  - The work is well motivated.
+  - The development is organized well and, thus, easy to follow.
+  - The technical development is reasonably thorough.  I did not find
+     any obvious errors.
+  - Section 2.3 made me once again "ugh, laziness!" - but identifying
+     and solving this problem is a nice touch.
+
+There are two main ideas: (1) The repeated division of a set U into new
+sets C', D', and U' where U' is carried forward to the next clause,
+and (2) the representation of value set abstractions that separate out
+the constraint set \Delta, making it possible to treat constraint
+satisfaction as a black box.
+Both ideas help keeping the entire solution very straightforward and
+clean.
+
+I like the observation that the "covered" set C can be propagated
+inwards to nested case expressions.  I do have a question about this
+part, though.  (See below.)
+
+The experimental evaluation (Section 7) is solid.  It is interesting
+that the algorithm found so many redundant clauses - and all of them
+were catch-alls.  Did you see any warnings about inaccessible (but not
+redundant) branches because of laziness?
+Also, when you looked at those redundant catch-alls, is it reasonable
+to assume they had all been added to shut up a compiler that was too
+fussy about non-exhaustive matches?
+
+> Addressed: Added a note about it
+
+Nit:
+The first (and only) sentence of section 4 before section 4.1 is
+redundant, no pun intended.
+
+> Removed
+
+                    ===== Comments for author(s) =====
+
+Question: Has shape- and constraint propagation into branches been
+implemented only for the special case shown where the pattern is
+simply "x" and, thus, receives the current covered set C unchanged,
+including shape and constraints?  If the pattern deconstructs the
+value, shape- and constraint information must be suitably split up and
+distributed to each variable bound by the pattern.  For shape
+information this is clearly straightforward, but what about (arbitrary)
+constraints?  Also, if there is some computation on the matched
+value(s) within the branch before a nested case-expression is reached,
+shapes and constraints need to be transformed accordingly.  Have you
+attempted such a thing, and how far can this reasonably be pushed
+given the technology developed here?
+

@@ -1,0 +1,94 @@
+===========================================================================
+                           ICFP '15 Review #52C
+---------------------------------------------------------------------------
+                     Paper #52: GADTs meet their match
+---------------------------------------------------------------------------
+
+
+                      Overall merit: 3. Weak accept
+                 Reviewer expertise: 4. Expert
+
+                         ===== Paper summary =====
+
+This paper describes an algorithm to do coverage checking for Haskell.
+The main issues to be handled are (1) laziness, (2) GADTs, (3)
+pattern guards, and (4) the left-to-right nature of Haskell's pattern
+matching.
+
+An algorithm for exhaustiveness and redundancy checking is given,
+which works by abstracting values as (essentially) sets of patterns
+plus propositional constraints (typically equality constraints arising
+from GADTs). The propositional solving is handled by a black-box
+constraint solver, and the paper cleverly exploits this modularity to
+use the solver to handle boolean guards as well.
+
+The algorithm is proved correct with respect to a specification of
+pattern matching (which is sensible, but not immediately tied to
+any operational semantics), and the experimental results of the
+implementation are given. The main improvement is in a reduction
+of unnecessarily conservative missing clause warnings.
+
+                          ===== Evaluation =====
+
+I think this paper is addressing an important problem; modern Haskell
+programmers use GHC's advanced extensions quite extensively, and
+correspondingly the Internet is full of complaints about the weakness
+GHC's pattern match warnings in advanced code.
+
+The motivating examples involving divergence were very compelling --
+they are not at all what I would have expected. (Though they made me
+wonder if the solution is to make the next FP strict!) The examples
+involving GADTs and guards were more or less what I expected; it was
+worth documenting but not too interesting.
+
+The algorithm (at least at the level presented) didn't have any big
+surprises in it. I was a little surprised that it seemed to be enough
+to maintain the value abstraction as a set of pattern vectors, since
+that effectively puts the logical constraints arising from matching
+into disjunctive normal form.
+
+Being able to handle constraints in a black box is very nice indeed
+from the POV of a maintainable implementation, but IMO it's a bit
+unfortunate it leaked a bit into the specification in Section 5, where
+the specification of pattern matching was handled denotationally
+rather than as extended typing rules.
+
+Overall, both the algorithm and the correctness proof were "as
+expected", except for the treatment of boolean guards, which worked
+significantly better than I expected.
+
+                    ===== Comments for author(s) =====
+
+I was very put off by the level of "hard sell" in the paper.  Now, I
+certainly don't object to a paper written in an enthusiastic tone, but
+I found myself getting suspicious because the related work seemed like
+it was mis-characterized.
+
+o For example, both Agda and Idris *do* support pattern guards via their
+  with-clause feature, and Agda (at least) also supports pattern
+  synonyms. 
+
+o In his 2003 paper, "Dependently Typed Pattern Matching", Hongwei Xi
+  for Dependent ML, focusing precisely on the issue of how
+  left-to-right matching interacts with constraints arising from index
+  domains/GADTs.
+  
+o Joshua Dunfield's 2007 PhD thesis has a chapter on pattern matching
+  with refinement types and constraints, handling both the
+  left-to-right nature of pattern matching and coverage checking.
+
+o Krishnaswami's "Focusing on Pattern Matching" (POPL 2009), which
+  also gives an account of exhaustiveness and redundancy-checking for
+  left-to-right pattern matching (comparable to Maranget's work, without
+  constraints). 
+
+As a result of all this, I am skeptical about all of the claims
+made in this paper that this is the only or first work handling these
+kinds of features. The sales pitch would have been more effective
+pointing out that it's for GHC, the main compiler for the most popular
+functional language, without the dubious claims about priority.
+
+Typos:
+
+- In [CConCon] in Figure 3, K_i is repeated twice and should be K_i and K_j.
+

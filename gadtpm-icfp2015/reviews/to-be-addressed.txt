@@ -1,0 +1,51 @@
+
+For your paper to be included in the program, please address the following
+in the final version of your paper:
+
+====
+The PC agreed to accept this paper conditionally on the authors moderating
+the claims made about the related work as discussed below:
+
+The claim in the abstract -- that this is the first system to handle all of
+laziness, guards, and GADTs in a single framework -- is indeed accurate,
+but Sections 2 and 8 significantly misrepresent the state of the related
+work. Section 2 says:
+
+  To our knowledge, none of these difficulties are systematically
+  addressed in the literature, let alone in a real compiler.
+
+This is not true:
+
+> Addressed
+
+coverage checking for GADTs is handled both in Coquand's
+1992 paper on dependent pattern matching, as well as in Joshua Dunfield's
+2007 PhD thesis, as well as Hongwei Xi's PhD thesis. Likewise, guards are
+handled (together with dependent types and exhaustiveness) in  McBride and
+McKenna's 2004 introduction of with-patterns; indeed, it would be unsound
+if they didn't handle exhaustiveness checking.
+
+> Addressed (TODO: Also add Hongwei Xi's PhD thesis)
+
+Section 8 makes a number of errors. 8.2 claims that Maranget gives the only
+algorithm for coverage-checking left-to-right matching. This is not true:
+Krishnaswami's 2009 paper also supports this.
+
+> Addressed
+
+Section 8.4 understates what
+Liquid Haskell can do: because it supports termination checking, it also is
+able to check exhaustiveness (using an SMT-based version of Coquand's
+algorithm).
+
+> Addressed (The quote used almost as is)
+
+Section 8.5 claims that guards and views cannot be handled by
+coverage checkers for total languages, which is false -- McBride and
+McKenna's approach handles it, and its compilation is described again in
+Ulf Norell's PhD thesis.
+
+> Addressed
+
+====
+

@@ -1,0 +1,195 @@
+
+===========================================================================
+                              Final Response
+---------------------------------------------------------------------------
+
+We are grateful for the reviewers' insightful comments!
+
+Reviewer 52A's comment that "this is folklore" is difficult to rebut
+since folklore is by definition not written down.  But we can
+confidently say that it was not folklore known to us (and hence
+perhaps others); and in any case papers that codify folklore, and make
+it precise, have real value.  In a similar vein Reviewer 52C says "no
+surprises", which we take as a great compliment.  Papers that deal
+only with exhaustiveness and redundancy of purely-syntactic pattern
+matching can be hard going; our scope is considerably more ambitious,
+and if we have made it seem simple, that is a good thing.
+
+Reviewer 52C offers the strongest critique of our paper, by helpfully
+identifying related work that we do not acknowledge (something we will
+fix).  However our claims do hold up!  We do *not* claim that other
+languages lack guards, or GADTs, or laziness; rather we claim that no
+other paper describes a single, uniform framework for pattern
+exhaustiveness and redundancy that cleanly handles all these features.
+
+Concerning specific related work:
+- Both Agda and Idris certainly feature dependent pattern matching and
+  "with"-based guards. Yet, Idris's lead developer Edwin Brady
+  has explained to us: "There's very limited checking of overlapping patterns
+  or redundant patterns - you will occasionally get a warning but there's no
+  proper check at the minute".
+
+  Agda: a with clause is translated into an auxilary function which
+  performs simple pattern matching. Hence, it is resembles more nested
+  pattern matching than the expressiveness of full-blown guards.
+  Additionally, both languages are strict and also based on
+  constructive logic, two issues that radically change the nature of
+  the problem we wish to solve.
+
+- "Dependently Typed Pattern Matching" involves dependent pattern matching but
+  does not deal with laziness or guards. Moreover, its focus is efficient
+  compilation; it mentions exhaustiveness checking only in passing.
+
+- Dunfield's thesis chapter on pattern matching is indeed related and
+  we apologize for the omission! The pattern language does deal with
+  dependent pattern-matching-style refinement and the author proposes a
+  similar iterative scheme. On the other hand the pattern language
+  does not include existential data types, nor data constructors that
+  quantify over arbitrary constraints (that can refine even variables
+  already bound in the environment) nor does it handle guards and
+  laziness. In summary, the work is related (and hence we should
+  discuss it!) but does not subsume our work.
+
+- The scope of "Focusing on Pattern Matching" is quite different. It considers
+  a much smaller language (e.g., no GADTs, laziness or guards). Moreover, it
+  focuses on giving a correctness proof for compilation and exhaustiveness
+  gets little attention.
+
+Reviewer 52B:
+Concerning our case study:
+- No inaccessible branches came up; it is a pattern that programmers rarely use
+  in practice.
+- All detected catch-all patterns were indeed suppressing bogus non-exhaustive
+  warnings.
+
+Concerning propagation into branches: Our current implementation
+propagates only type constraints into branches but we plan to do the
+same with term constraints.
+
+===========================================================================
+                           ICFP '15 Review #52A
+---------------------------------------------------------------------------
+
+| In Section 8.1, you say "none of these complications arise in Haskell". I would
+| say that’s a fairly twisted description. These are not complications by themselves
+| (since they can simply be ignored), but rather additional optimization
+| _opportunities_ that Haskell does not offer.
+
+He makes a point but I would prefer to leave the text as is.
+
+| You should also cite Sestoft’s "ML pattern match compilation and partial evaluation".
+
+I agree, we should add this.
+
+| Typos:
+|
+| Fig.2, grammar of types: “tau tau” should be “tau -> tau”
+
+Wrong, ignore.
+
+| Fig.4, Denotation of patterns: in the rule for pattern guards, what is E[.]?
+| Fig.3, rule CConCon: 2nd K_i should be K_j
+| Fig.4, rule Con: t_i should be V_i
+
+Agreed, TODO.
+
+===========================================================================
+                           ICFP '15 Review #52B
+---------------------------------------------------------------------------
+
+| The experimental evaluation (Section 7) is solid.  It is interesting
+| that the algorithm found so many redundant clauses - and all of them
+| were catch-alls.  Did you see any warnings about inaccessible (but not
+| redundant) branches because of laziness?
+
+No, not even one. The examples we show in the paper are relly contrived and
+discussed for completeness reasons and to illustrate the problems that may
+arise when GADTs interact with laziness.
+
+| Also, when you looked at those redundant catch-alls, is it reasonable
+| to assume they had all been added to shut up a compiler that was too
+| fussy about non-exhaustive matches?
+
+Yes, even though some of them were written for previous versions of GHC
+(it has improved during the past years, with the 2 hacks mentioned in the
+paper).
+
+| The first (and only) sentence of section 4 before section 4.1 is
+| redundant, no pun intended.
+
+Agreed. To remove.
+
+| Question: Has shape- and constraint propagation into branches been
+| implemented only for the special case shown where the pattern is
+| simply "x" and, thus, receives the current covered set C unchanged,
+| including shape and constraints?  If the pattern deconstructs the
+| value, shape- and constraint information must be suitably split up and
+| distributed to each variable bound by the pattern.  For shape
+| information this is clearly straightforward, but what about (arbitrary)
+| constraints?  Also, if there is some computation on the matched
+| value(s) within the branch before a nested case-expression is reached,
+| shapes and constraints need to be transformed accordingly.  Have you
+| attempted such a thing, and how far can this reasonably be pushed
+| given the technology developed here?
+
+Our current implementation (we are still improving it) propagates type
+constraints into branches. It does not propagate term constraints \Delta
+though. It would be straightforward to propagate them as well and this is
+actually something we plan to work on.
+Interestingly, shapes and constraints need not be transformed. In rule CConVar
+you can see that we generate "chains" of equalities (using variables x and tau_x
+for term and type equalities, respectively), so the suitable split up can happen
+lazily, by the term oracle.
+
+===========================================================================
+                           ICFP '15 Review #52C
+---------------------------------------------------------------------------
+
+| For example, both Agda and Idris *do* support pattern guards via their
+| with-clause feature, and Agda (at least) also supports pattern
+| synonyms.
+
+Idris performs some kind of coverage check for optimisations but, as Edwin
+Brady explained to us, "There's very limited checking of overlapping patterns
+or redundant patterns - you will occasionally get a warning but there's no
+proper check at the minute."
+
+TODO: Discuss about agda and the with construct.
+
+| In his 2003 paper, "Dependently Typed Pattern Matching", Hongwei Xi
+| for Dependent ML, focusing precisely on the issue of how
+| left-to-right matching interacts with constraints arising from index
+| domains/GADTs.
+
+It involves dependent pattern matching but doesn't have to deal with laziness.
+Moreover, it focuses on efficient compilation, a problem we do not claim to
+handle.
+
+| Joshua Dunfield's 2007 PhD thesis has a chapter on pattern matching
+| with refinement types and constraints, handling both the
+| left-to-right nature of pattern matching and coverage checking.
+
+
+| Krishnaswami's "Focusing on Pattern Matching" (POPL 2009), which
+| also gives an account of exhaustiveness and redundancy-checking for
+| left-to-right pattern matching (comparable to Maranget's work, without
+| constraints).
+
+An interesting work but with different goals: The language it works on is much
+simpler than Haskell (as implemented in GHC), i.e. no GADTs, no laziness and
+no guards. Additionally, it focuses on giving a correctness proof for
+compilation and the exhaustiveness check gets little attention.
+
+| I found myself getting suspicious because the related work seemed like
+| it was mis-characterized.
+| ...
+| As a result of all this, I am skeptical about all of the claims
+| made in this paper that this is the only or first work handling these
+| kinds of features.
+
+We consider our main contribution to be the study of the interaction between
+all these features and the fact that our framework can handle all of them in a
+uniform way and not the study of them independntly. We never intended to claim
+something like it and we will make it more clear in the text.
+-- Your comment shows that it came out the wrong way
+

@@ -1,0 +1,226 @@
+The following text documents the changes we have made to the paper
+in response to the reviews.
+
+===========================================================================
+
+---------------------------------------------------------------------------
+                     Paper #52: GADTs meet their match
+---------------------------------------------------------------------------
+
+===========================================================================
+
+
+===========================================================================
+                           ICFP '15 Review #52A
+===========================================================================
+
+In Figure 4, Denotation of patterns: in the rule for pattern guards, what is E[.]?
+
+> Addressed: Added E[|.|] (interpretation of expressions) in Figure 4.
+
+In Section 8.1, you say “none of these complications arise in Haskell”. I would
+say that’s a fairly twisted description. These are not complications by
+themselves (since they can simply be ignored), but rather additional
+optimization _opportunities_ that Haskell does not offer.
+
+> Addressed: Replaced with:
+> However, Haskell does not offer this degree of freedom; it fixes a
+> top-to-bottom and left-to-right order of evaluation in pattern match clauses.
+
+You should also cite Sestoft’s “ML pattern match compilation and partial
+evaluation”. In particular, the algorithm he arrives at in Sec. 7 of the paper
+essentially is an abstract interpretation computing positive and negative
+information as well, and can trivially report exhaustiveness and irredundancy
+errors (as pointed out in 7.4).
+
+> Addressed: Added to Section 8.2:
+> Sestoft~\cite{sestoft} focuses on compiling pattern matches for a
+> simply-typed variant of ML, but his algorithm also identifies inexhaustive
+> matches and redundant match rules as a by-product.
+
+Typos:
+
+Fig.2, grammar of types: “tau tau” should be “tau -> tau”
+
+> Addressed: Syntax of types replaced with:
+> tau ::= a | tau_1 -> tau_2 | T \overline{tau} | ...
+
+Fig.3, rule CConCon: 2nd K_i should be K_j
+Fig.4, rule Con: t_i should be V_i
+
+> Addressed
+
+===========================================================================
+                           ICFP '15 Review #52B
+===========================================================================
+
+The experimental evaluation (Section 7) is solid.  It is interesting
+that the algorithm found so many redundant clauses - and all of them
+were catch-alls.  Did you see any warnings about inaccessible (but not
+redundant) branches because of laziness?
+Also, when you looked at those redundant catch-alls, is it reasonable
+to assume they had all been added to shut up a compiler that was too
+fussy about non-exhaustive matches?
+
+> Made explicit in the text: Added to Section 7:
+> The latter is where our algorithm shines:
+> it identifies 38 pattern matches with redundant clauses, all of them
+> catch-all cases "added to suppress erroneous warnings."
+
+Nit:
+The first (and only) sentence of section 4 before section 4.1 is
+redundant, no pun intended.
+
+> Removed
+
+===========================================================================
+                           ICFP '15 Review #52C
+===========================================================================
+
+I was very put off by the level of "hard sell" in the paper.  Now, I
+certainly don't object to a paper written in an enthusiastic tone, but
+I found myself getting suspicious because the related work seemed like
+it was mis-characterized.
+
+o For example, both Agda and Idris *do* support pattern guards via their
+  with-clause feature, and Agda (at least) also supports pattern
+  synonyms.
+
+> Text about Agda replaced in Section 8.4 by:
+> Total languages like Agda~\cite{norellphd} and Coq~\cite{Coq:manual} must
+> treat non-exhaustive pattern matches as an \emph{error} (not a warning).
+> Moreover, they also allow overlapping patterns and use a variation of
+> Coquand's dependent pattern matching~\cite{pmdependent} to report redundant
+> clauses.  The algorithm works by splitting the context, until the current
+> neighbourhood matches one of the original clauses. If the current
+> neighbourhood fails to match all the given clauses, the pattern match is
+> non-exhaustive and a coverage failure error is issued. If matching is
+> inconclusive though, the algorithm splits along one of the blocking variables
+> and proceeds recursively with the resulting neighbourhoods. Finally, the
+> |with|-construct~\cite{norellphd}, first introduced by McBride and
+> McKinna~\cite{viewfromleft}, provides (pattern) guards in a form that is
+> suitable for total languages.
+>
+> The key differences between our work and work on dependent pattern matching
+> are the following: (i) because of the possibility of divergence we have to
+> take laziness into account; (ii) current presentations of
+> |with|-clauses~\cite{viewfromleft} do not introduce term-level equality
+> propositions and hence may report inexhaustiveness checking more often than
+> necessary, (iii) our approach is easily amenable to external decision
+> procedures that are proven sound but do not have to return proof witnesses in
+> the proof theory in hand.
+
+o In his 2003 paper, "Dependently Typed Pattern Matching", Hongwei Xi
+  for Dependent ML, focusing precisely on the issue of how
+  left-to-right matching interacts with constraints arising from index
+  domains/GADTs.
+
+> Added to Section 8.3:
+> Xi.~\cite{dependentxi,deadcodexi,xithesis} shows how to eliminate dead code
+> for GADT pattern matching -- and dependent pattern matching in general -- for
+> Dependent ML. He has a two-step approach: first add all the missing patterns
+> using simple-pattern techniques (Section~\ref{sec:related-simple}), and then
+> prune out redundant clauses by checking when typing constraints are
+> un-satisfiable.  We combine the two steps, but the satisfiability checking is
+> similar.
+
+o Joshua Dunfield's 2007 PhD thesis has a chapter on pattern matching
+  with refinement types and constraints, handling both the
+  left-to-right nature of pattern matching and coverage checking.
+
+> Added to Section 8.3:
+> Dunfield's thesis~\cite[Chapter 4]{dunfieldthesis} presents a coverage
+> checker for Stardust \cite{stardust}, another ML variant with refinement and
+> intersection types.  The checker proceeds in a top-down, left-to-right
+> fashion much like Figure~\ref{fig:algorithm_outline} and uses type
+> satisfiability to prune redundant cases.
+
+o Krishnaswami's "Focusing on Pattern Matching" (POPL 2009), which
+  also gives an account of exhaustiveness and redundancy-checking for
+  left-to-right pattern matching (comparable to Maranget's work, without
+  constraints).
+
+> Removed:
+> It is the only work that focuses on warnings rather than efficient
+> compilation; and that addresses the top-to-bottom Haskell semantics of
+> pattern matching.
+
+> Added to Section 8.2:
+> Krishnaswami~\cite{krisnaswami} accounts for exhaustiveness and redundancy
+> checking as part of formalisation of pattern matching in terms of the focused
+> sequent calculus. His approach assumes a left-to-right ordering in the
+> translation of ML patterns, which is compatible with Haskell's semantics.
+
+Typos:
+
+- In [CConCon] in Figure 3, K_i is repeated twice and should be K_i and K_j.
+
+> Addressed
+
+
+===========================================================================
+                          Further Requirements
+===========================================================================
+
+The PC agreed to accept this paper conditionally on the authors moderating
+the claims made about the related work as discussed below:
+
+The claim in the abstract -- that this is the first system to handle all of
+laziness, guards, and GADTs in a single framework -- is indeed accurate,
+but Sections 2 and 8 significantly misrepresent the state of the related
+work. Section 2 says:
+
+  To our knowledge, none of these difficulties are systematically
+  addressed in the literature, let alone in a real compiler.
+
+This is not true:
+
+> Addressed:
+> Removed:
+>   To our knowledge, \emph{none} of these difficulties are systematically
+>   addressed in the literature, let alone in a real compiler.  In this paper we
+>   show how to tackle all three, in a single unified framework.
+> Added to Section 2:
+>   These issues are all addressed individually in the literature but, to
+>   our knowledge, we are the first to tackle all three in a single unified
+>   framework, and implement the unified algorithm in a production compiler.
+
+coverage checking for GADTs is handled both in Coquand's
+1992 paper on dependent pattern matching, as well as in Joshua Dunfield's
+2007 PhD thesis, as well as Hongwei Xi's PhD thesis. Likewise, guards are
+handled (together with dependent types and exhaustiveness) in  McBride and
+McKenna's 2004 introduction of with-patterns; indeed, it would be unsound
+if they didn't handle exhaustiveness checking.
+
+> Addressed (See above: #52C)
+
+Section 8 makes a number of errors. 8.2 claims that Maranget gives the only
+algorithm for coverage-checking left-to-right matching. This is not true:
+Krishnaswami's 2009 paper also supports this.
+
+> Addressed (See above: #52C)
+
+Section 8.4 understates what
+Liquid Haskell can do: because it supports termination checking, it also is
+able to check exhaustiveness (using an SMT-based version of Coquand's
+algorithm).
+
+> Addressed. Current text in Section 8.5:
+> Liquid types~\cite{liquid,liquidhaskell} is a refinement types extension to
+> Haskell. Similarly to ESC/Haskell, it could be used to detect redundant,
+> overlapping, or non-exhaustive patterns, using an SMT-based version of
+> Coquand's algorithm~\cite{pmdependent}. To take account of type-level
+> constraints (such as type equalities from GADTs) one would have to encode
+> them as refinement predicates. The algorithm that we propose for computing
+> covered, uncovered, and diverging sets would still be applicable, but would
+> have to emit constraints in the vocabulary of Liquid types.
+
+Section 8.5 claims that guards and views cannot be handled by
+coverage checkers for total languages, which is false -- McBride and
+McKenna's approach handles it, and its compilation is described again in
+Ulf Norell's PhD thesis.
+
+> Addressed (See above: #52C)
+
+====
+

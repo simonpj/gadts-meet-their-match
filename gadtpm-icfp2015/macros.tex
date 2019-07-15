@@ -1,0 +1,183 @@
+
+%%%%%%%%% HERE THE MACROS START
+% Highlight changes and keyword undone
+% \newcommand{\highlight}[1]{\colorbox{lightgray}{\ensuremath{#1}}}
+
+\newcommand{\highlight}[1]{\setlength{\fboxsep}{2pt}\colorbox{lightgray}{\ensuremath{#1}}} % less height
+
+\newcommand{\UNDONE}{\begin{color}{red}{\bf UNDONE }\end{color}}
+\newcommand{\DONE}{\begin{color}{green}{\bf DONE}\end{color}}
+\newcommand{\NOTE}[1]{\bf #1}
+\newcommand{\TODO}[1]{{\bf{\begin{color}{red}{TODO: }\end{color} #1}}}
+
+% Useful macros that are often needed
+%\newcommand\WILD{\mbox{@_@}}
+\newcommand\EMPTY{\varnothing}
+\newcommand\PS{\overline{p}}
+\newcommand\QS{\overline{q}}
+\newcommand\VS{\overline{v}}
+
+\newcommand{\XS}[1]{\vec{x}_{#1}}
+\newcommand{\YS}[1]{\vec{y}_{#1}}
+\newcommand{\ubot}[1]{#1_{\bot}}    % x_bot
+
+\newcommand{\typeeq}{\sim}        % type equality
+\newcommand{\termeq}{\approx}     % term equality
+
+
+% All functions in the document
+\newcommand\MISSING{\mathit{missing}}
+\newcommand\USEFUL{\mathit{useful}}
+\newcommand\USED{\mathit{used}}
+\newcommand\UNUSED{\mathit{unused}}
+\newcommand\REDUNDANT{\mathit{redundant}}
+\newcommand\MISSINGROW{\mathit{missing_0}} %_1} %\_row}}
+\newcommand\EXTENDS{\mathit{extends}}
+\newcommand\COVERS{\mathit{covers}}
+\newcommand\EXTENDSSET{\mathit{extends\_set}}
+\newcommand\COVERSSET{\mathit{covers\_set}}
+
+% Matching predicate
+\newcommand{\MATCH}{\mathit{match}}
+\newcommand{\TRUE}{\mathcal{T}}
+\newcommand{\FALSE}{\mathcal{F}}
+
+% Actual function versions (with parameters)
+\newcommand{\MISSINGROWF}[1]{\MISSING\: #1}
+\newcommand{\EXTENDSF}[2]{\EXTENDS \: #1\: #2}
+\newcommand{\COVERSF} [2]{\COVERS  \: #1\: #2}
+\newcommand{\COVERSP} [2]{\COVERS' \: #1\: #2} % covers prime
+\newcommand{\MATCHF}[2]{\MATCH \: (#1, #2)}
+
+% s_u, s_c, s_bot
+\newcommand{\setcovered}[1]{C_{#1}}      % Set of value abstractions covered by a pattern
+\newcommand{\setuncovered}[1]{U_{#1}}    % Set of value abstractions un-covered by a pattern
+\newcommand{\setdiverges}[1]{D_{#1}}     % Set of value abstractions that diverge when matched
+
+% Not sure that is useful yet
+\newcommand\FORCES{\mathit{forces}}
+\newcommand{\FORCESF}[2]{\FORCES\: #1\: #2}
+
+\newcommand{\litc}[1]{\ensuremath{\{#1\}}}
+
+% To represent predicates
+\newcommand\PP{\mathcal{P}}
+\newcommand\QQ{\mathcal{Q}}
+\newcommand\RR{\mathcal{R}}
+
+% To highlight them
+\newcommand\HPP{\highlight{\PP}}
+\newcommand\HQQ{\highlight{\QQ}}
+\newcommand\HRR{\highlight{\RR}}
+
+% Typechecking
+\newcommand{\CONSISTENT}{\mathit{consistent}}
+
+\newcommand{\OutsideIn}[1]{{\rm {\sc OutsideIn}(#1)}\xspace}
+
+% extends', covers' and forces' names
+\newcommand\EName[1]{\textsc{\small{(E$\_$#1)}}}
+\newcommand\CName[1]{\textsc{\small{(C$\_$#1)}}}
+\newcommand\FName[1]{\textsc{\small{(F$\_$#1)}}}
+
+\newcommand\False{\mathit{False}}
+\newcommand\True{\mathit{True}}
+
+
+\newcommand{\emptyvec}{\epsilon}   % Empty list vector for the vec notation
+\newcommand{\gtup}[2]{#2 \vdash #1}
+
+
+% Interpretation
+\newcommand{\tinterp}[1]{\mathcal{T} \llbracket #1 \rrbracket}
+\newcommand{\interp}[1]{\llbracket #1 \rrbracket}
+\newcommand{\ginterp}[2]{{\llbracket #1 \rrbracket}_{#2}}
+\newcommand{\minterp}[1]{\ginterp{#1}{M}}
+\newcommand{\pinterpm}[3]{\interp{#1}^{#2}(#3)}
+\newcommand{\qinterp}[1]{\interp{#1}}
+\newcommand{\tauinterp}[1]{\ginterp{#1}{\overline{\tau}}}
+\newcommand{\einterp}[1]{E\interp{#1}}
+
+\newcommand{\ftv}[1]{\mathit{ftv}(#1)}
+
+\newcommand{\ruleform}[1]{\fbox{$#1$}}
+\newcommand{\rulename}[1]{\textsc{[#1]}}
+
+\newcommand{\alg}[2]{\mathit{alg}(#1, #2)}
+\newcommand{\algorithm}[2]{\mathit{alg}(#1, #2)} % replace appearances of this with \alg{}{}
+\newcommand{\triple}[3]{\langle #1, #2, #3 \rangle}
+
+\newcommand{\SC}{\setcovered{}}
+\newcommand{\SB}{\setdiverges{}}
+\newcommand{\SU}{\setuncovered{}}
+
+\newcommand{\tricup}{\cup^\lrangle}
+\newcommand{\bigtricup}{\bigcup^\lrangle}
+
+\newcommand{\lrangle}{{\langle\rangle}}
+\newcommand{\tmap}{\mathit{map}^\lrangle}
+
+\newcommand{\ticket}[1]{\href{https://ghc.haskell.org/trac/ghc/ticket/#1}{\##1}}
+
+
+
+\newcommand{\gk}[1]{\begin{color}{red}{\bf GK:} #1\end{color}}
+\newcommand{\tom}[1]{\begin{color}{blue}{\bf TOM:} #1\end{color}}
+\newcommand{\simon}[1]{\begin{color}{purple}{\bf SLPJ:} #1\end{color}}
+\newcommand{\dv}[1]{\begin{color}{green}{\bf DV:} #1\end{color}}
+
+% \newcommand{\gk}[1]{}
+% \newcommand{\tom}[1]{}
+% \newcommand{\simon}[1]{}
+% \newcommand{\dv}[1]{}
+
+
+\newcommand{\TRANSLATE}{\mathit{desugar}}
+\newcommand{\TRANSLATEF}[1]{\TRANSLATE\: #1}
+\newcommand{\TRANSLATEP}[1]{\mathit{dsP}\: #1}
+\newcommand{\TRANSLATEG}[1]{\mathit{dsG}\: #1}
+
+\newcommand{\TRANSLATEV}{\mathit{view}}
+\newcommand{\TRANSLATEVF}[2]{\mathit{\TRANSLATEV\:{#1}\:{#2}}}
+
+\newcommand{\TRANSLATES}{\mathit{dsPs}}
+
+\newcommand{\HsPat}{\mathbb{P}}
+\newcommand{\HsG}{\mathbb{G}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% FROM APRIL
+
+% THERE IS A PROBLEM
+
+\newcommand{\vtup}[3]{#1 \vdash #2 \deltasep #3}
+%\newcommand{\deltasep}{\:\text{\tt @}\:}
+
+%% \newcommand{\deltasep}{\:[\hspace{-1pt}]\:}
+\newcommand{\deltasep}{\:\triangleright\:}
+
+\newcommand{\MAP}{\mathit{map}}
+\newcommand{\TAIL}{\mathit{tail}}
+\newcommand{\CONS}{\mathit{ucon}}
+\newcommand{\ZIPCON}{\mathit{kcon}}
+
+\newcommand{\COVERED}{{\mathcal\setcovered{}}}     %% \mathit{covered}}
+\newcommand{\UNCOVERED}{{\mathcal\setuncovered{}}} %% \mathit{uncovered}}
+\newcommand{\ELIMINATED}{{\mathcal\setdiverges{}}} %% \mathit{eliminated}}
+
+%% Parenthesized versions
+\newcommand{\covered}[2]{\COVERED\:(#1)\;(#2)}
+\newcommand{\uncovered}[2]{\UNCOVERED\:(#1)\;(#2)}
+\newcommand{\eliminated}[2]{\ELIMINATED\:(#1)\;(#2)}
+
+%% Unparenthesized versions
+\newcommand{\ucovered}[2]{\COVERED\:#1\:#2}
+\newcommand{\uuncovered}[2]{\UNCOVERED\:#1\:#2}
+\newcommand{\ueliminated}[2]{\ELIMINATED\:#1\:#2}
+
+
+\newcommand{\cons}[2]{#1\:#2}
+
+\newcommand{\ps}{\vec{p}}
+\newcommand{\as}{\vec{a}}
+
+\newcommand{\diverges}[1]{#1 = \bot}
